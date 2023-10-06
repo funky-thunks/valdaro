@@ -1,0 +1,11 @@
+code:
+  nix develop .#server -c vim .
+
+build:
+  nix develop .#server -c cabal build
+
+watch:
+  nix develop .#server -c ghcid
+
+repl:
+  nix develop .#server -c cabal repl

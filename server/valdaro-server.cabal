@@ -1,0 +1,93 @@
+cabal-version:       3.0
+name:                valdaro-server
+version:             0.0.1.0
+synopsis:            Library to help build a SaaS backend
+description:
+    Library to help build a SaaS backend.
+    See README.md for more details.
+license:             NONE
+author:              Frédéric Menou
+maintainer:          Frédéric Menou <frederic.menou@gmail.com>
+copyright:           2023 Frédéric Menou
+category:            Application
+build-type:          Simple
+extra-doc-files:     README.md
+tested-with:         GHC == 9.2.8
+
+common common-options
+  build-depends:       base ^>= 4.16.4.0
+                     , relude
+
+  mixins:              base hiding (Prelude)
+                     , relude (Relude as Prelude)
+                     , relude
+
+  ghc-options:         -Wall
+                       -Wcompat
+                       -Widentities
+                       -Wincomplete-uni-patterns
+                       -Wincomplete-record-updates
+                       -Wredundant-constraints
+                       -Wnoncanonical-monad-instances
+  if impl(ghc >= 8.2)
+    ghc-options:       -fhide-source-paths
+  if impl(ghc >= 8.4)
+    ghc-options:       -Wmissing-export-lists
+                       -Wpartial-fields
+  if impl(ghc >= 8.8)
+    ghc-options:       -Wmissing-deriving-strategies
+                       -fwrite-ide-info
+                       -hiedir=.hie
+  if impl(ghc >= 8.10)
+    ghc-options:       -Wunused-packages
+
+  default-language:    GHC2021
+
+  default-extensions:  DerivingStrategies
+                     , DeriveAnyClass
+
+library
+  import:              common-options
+  hs-source-dirs:      src
+
+  build-depends:       servant
+                     , servant-server
+                     , aeson
+                     , monad-validate
+                     , postgresql-simple
+                     , resource-pool
+                     , bytestring
+                     , pg-transact
+                     , monad-control
+                     , postgresql-migration
+                     , mtl
+                     , biscuit-haskell
+                     , biscuit-servant
+                     , time
+                     , wai
+                     , sel
+                     , http-api-data
+
+  exposed-modules:     Valdaro
+                     , Valdaro.API.Login
+                     , Valdaro.API.Session
+                     , Valdaro.Configuration
+                     , Valdaro.Security
+                     , Valdaro.Security.Biscuit
+                     , Valdaro.Security.Configuration
+                     , Valdaro.Security.Password
+                     , Valdaro.Server.Utils
+                     , Valdaro.SQL
+                     , Valdaro.SQL.Configuration
+                     , Valdaro.SQL.Connectivity
+                     , Valdaro.SQL.Migrations
+
+test-suite valdaro-server-test
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       valdaro-server
+  ghc-options:         -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
