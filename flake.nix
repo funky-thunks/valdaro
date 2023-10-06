@@ -30,6 +30,14 @@
           valdaro.lint-nix = (import nixpkgs-22_11 { inherit (prev) system; }).callPackage ./lint.nix {
             inherit (nixpkgs-unstable) lib;
           };
+
+          valdaro.mkChecks =
+            let mkCheck = name: script:
+                  prev.runCommand name {} ''
+                    mkdir -p $out
+                    ${script}
+                  '';
+             in prev.lib.attrsets.mapAttrs mkCheck;
         };
 
      in globals // flake-utils.lib.eachDefaultSystem (system:
