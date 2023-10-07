@@ -13,17 +13,16 @@ module Valdaro.Security.Biscuit
 import           Auth.Biscuit
 import           Auth.Biscuit.Datalog.AST
 import           Auth.Biscuit.Servant
-import           Control.Monad.Error.Class        (MonadError)
 import           Data.Time.Clock                  (getCurrentTime)
 import           Network.Wai                      (Request)
 import           Relude.Extra.Newtype
-import           Servant.Server                   (Context, HasServer,
-                                                   ServerError, ServerT, err401,
-                                                   err403, err500, hoistServer)
+import           Servant.Server                   (Context, HasServer, ServerT,
+                                                   err401, err403, err500,
+                                                   hoistServer)
 import           Servant.Server.Experimental.Auth (AuthHandler)
 import           Valdaro.Configuration            (Sensitive (..))
 import           Valdaro.Security.Configuration
-import           Valdaro.Server.Utils             (throwJSON)
+import           Valdaro.Server                   (HandlerLike, throwJSON)
 
 genServantCtx :: HasSecurity env => env -> Context '[AuthHandler Request (Biscuit OpenOrSealed Verified)]
 genServantCtx = genBiscuitCtxWith . biscuitConfig . publicKey . un . getSecurity
@@ -34,8 +33,6 @@ biscuitConfig pk =
     { onParseError = const (throwJSON err401 ("Error parsing the token." :: Text))
     , onExtractionError = throwJSON err401 . fromString @Text
     }
-
-type HandlerLike handler = (MonadIO handler, MonadError ServerError handler)
 
 protect :: forall (api :: Type) (handler :: Type -> Type)
          . (HasServer api '[], HandlerLike handler)
@@ -54,7 +51,7 @@ authenticateAndCheck biscuit =
         pure [authorizer| time({now}); |]
    in handleBiscuitWith biscuitErrorHandler biscuit . withPriorityAuthorizerM nowFact
 
-biscuitErrorHandler :: MonadError ServerError handler => ExecutionError -> handler result
+biscuitErrorHandler :: HandlerLike handler => ExecutionError -> handler result
 biscuitErrorHandler = \case
   Timeout -> throwJSON err500 ("Something went wrong while checking your token. Please retry." :: Text)
   _       -> throwJSON err403 ("Invalid token." :: Text)

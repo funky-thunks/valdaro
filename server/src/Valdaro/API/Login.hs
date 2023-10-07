@@ -8,17 +8,16 @@ module Valdaro.API.Login
   , CanLogin
   ) where
 
-import           Auth.Biscuit              (serializeB64)
-import           Auth.Biscuit.Datalog.AST  (IsWithinSet (NotWithinSet),
-                                            PredicateOrFact (InFact), ToTerm)
-import           Control.Monad.Error.Class (MonadError)
-import           Data.Aeson                (ToJSON (..), Value (String))
+import           Auth.Biscuit             (serializeB64)
+import           Auth.Biscuit.Datalog.AST (IsWithinSet (NotWithinSet),
+                                           PredicateOrFact (InFact), ToTerm)
+import           Data.Aeson               (ToJSON (..), Value (String))
 import           Servant.API
-import           Servant.Server            (ServerError, ServerT, err403)
-import           Valdaro.Security          (HasSecurity, PasswordHash,
-                                            generateToken, verifyPassword)
-import           Valdaro.Server.Utils      (throwOrYield)
-import           Web.FormUrlEncoded        (FromForm)
+import           Servant.Server           (ServerT, err403)
+import           Valdaro.Security         (HasSecurity, PasswordHash,
+                                           generateToken, verifyPassword)
+import           Valdaro.Server           (HandlerLike, throwOrYield)
+import           Web.FormUrlEncoded       (FromForm)
 
 type API email = ReqBody '[FormUrlEncoded] (LoginBody email) :> Post '[JSON] LoginResult
 
@@ -46,9 +45,9 @@ data LoginFailed = LoginFailed
 instance ToJSON LoginFailed where
   toJSON LoginFailed = String "Login failed."
 
-type CanLogin env handler email = (MonadIO handler, MonadError ServerError handler, HasSecurity env, MonadReader env handler, ToTerm email 'NotWithinSet 'InFact)
+type CanLogin env handler email = (HandlerLike handler, HasSecurity env, MonadReader env handler, ToTerm email 'NotWithinSet 'InFact)
 
-loginHandler :: (CanLogin env handler email) => (email -> handler (Maybe PasswordHash)) -> LoginBody email -> handler LoginResult
+loginHandler :: CanLogin env handler email => (email -> handler (Maybe PasswordHash)) -> LoginBody email -> handler LoginResult
 loginHandler lookupHash LoginBody { email, password } = do
   hash' <- lookupHash email
   throwOrYield err403 =<<

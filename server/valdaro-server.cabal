@@ -81,7 +81,7 @@ library
                      , Valdaro.Security.Biscuit
                      , Valdaro.Security.Configuration
                      , Valdaro.Security.Password
-                     , Valdaro.Server.Utils
+                     , Valdaro.Server
                      , Valdaro.Service
                      , Valdaro.SQL
                      , Valdaro.SQL.Configuration

@@ -9,25 +9,26 @@ module Valdaro.API.Session
   ) where
 
 import           Auth.Biscuit.Servant
-import           Control.Monad.Error.Class (MonadError, throwError)
+import           Control.Monad.Error.Class (throwError)
 import           Servant.API
-import           Servant.Server            (ServerError, ServerT, err403,
+import           Servant.Server            (ServerT, err403,
                                             err404)
+import           Valdaro.Server            (HandlerLike)
 import           Valdaro.SQL
 
 type API user = "user" :> "me" :> Get '[JSON] user
 
-server :: (CanSQL r handler, MonadError ServerError handler) => (Text -> handler (Maybe user)) -> ServerT (API user) (WithAuthorizer handler)
+server :: (CanSQL r handler, HandlerLike handler) => (Text -> handler (Maybe user)) -> ServerT (API user) (WithAuthorizer handler)
 server = currentUserHandler
 
-currentUserHandler :: (CanSQL r handler, MonadError ServerError handler) => (Text -> handler (Maybe user)) -> WithAuthorizer handler user
+currentUserHandler :: (CanSQL r handler, HandlerLike handler) => (Text -> handler (Maybe user)) -> WithAuthorizer handler user
 currentUserHandler lookupUser =
   withTransformation extractEmail $
     withAuthorizer [authorizer|
         allow if user($email);
       |] $ maybe (throwError err404) pure =<< lift . lookupUser =<< ask
 
-extractEmail :: MonadError ServerError handler => AuthorizedBiscuit OpenOrSealed -> handler Text
+extractEmail :: HandlerLike handler => AuthorizedBiscuit OpenOrSealed -> handler Text
 extractEmail AuthorizedBiscuit { authorizationSuccess } =
   let b = bindings $ matchedAllowQuery authorizationSuccess
    in maybe (throwError err403) pure $ getSingleVariableValue b "email"
