@@ -22,11 +22,12 @@
 
         otherPackages = import pkgs/overlay.nix;
 
-        frontendOverlay = _: prev: {
+        frontendOverlay = final: prev: {
           valdaro.frontend = {
             inherit (gitignore.lib) gitignoreSource;
             easy-ps = easy-purescript-nix.packages.${prev.system};
             inherit (nixpkgs-unstable.legacyPackages.${prev.system}) esbuild;
+            mkShell = final.callPackage shells/frontend.nix {};
           };
         };
 
@@ -60,14 +61,16 @@
 
               server = pkgs.haskellPackages.valdaro-server;
 
-              tooling = pkgs.callPackage ./shell.nix { pname = "valdaro"; version = "0.0.1.0"; };
+              tooling = pkgs.callPackage shells/tooling.nix { pname = "valdaro"; version = "0.0.1.0"; };
 
            in {
                 packages.server  = server;
                 packages.default = server;
 
-                devShells.server = server.env;
-                devShells.tooling = tooling;
+                devShells = {
+                  inherit tooling;
+                  server = server.env;
+                };
               }
         );
 }
