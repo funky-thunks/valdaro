@@ -15,7 +15,7 @@
     let globals = {
           lib.valdaro = import ./lib.nix;
 
-          overlays.valdaro = nixpkgs.lib.fixedPoints.composeManyExtensions [ node2nix-hs.overlays.default otherPackages frontendOverlay haskellOverlay lintersOverlay ];
+          overlays.valdaro = nixpkgs.lib.fixedPoints.composeManyExtensions [ node2nix-hs.overlays.default otherPackages frontendOverlay haskellOverlay lintersOverlay packagingOverlay ];
 
           nixosModules.postgresql = import nixos/postgresql.nix;
         };
@@ -53,6 +53,38 @@
           };
         };
 
+        packagingOverlay = final: prev:
+          let callService = { frontend, backend, pname, version, nix-lint-source, extra-checks ? {} }:
+                serviceOutputs (prepareService { inherit frontend backend pname version nix-lint-source; }) extra-checks;
+
+              prepareService = { frontend, backend, pname, version, nix-lint-source }:
+                rec
+                  {
+                    frontendPackage = final.valdaro.frontend.callPackage frontend { inherit pname version; };
+                    backendPackage = final.callPackage backend {};
+                    servicePackage = final.symlinkJoin {
+                      name = "${pname}-${version}";
+                      inherit version;
+                      paths = [ backendPackage.package frontendPackage.package ];
+                    };
+                    checks = {
+                      lint-haskell = "${final.hlint}/bin/hlint ${backend}";
+                      lint-nix = final.valdaro.lint-nix nix-lint-source;
+                    };
+                  };
+
+              tooling = prev.callPackage shells/tooling.nix { pname = "valdaro"; version = "0.0.1.0"; };
+
+              serviceOutputs = svc@{ frontendPackage, backendPackage, servicePackage, ... }: checks:
+                {
+                  packages  = { frontend = frontendPackage.package; backend = backendPackage.package; default = servicePackage; };
+                  devShells = { frontend = frontendPackage.shell;   backend = backendPackage.shell;   default = tooling; };
+                  inherit (backendPackage) entrypoint;
+                  app = { default = { type = "app"; program = backendPackage.entrypoint; }; };
+                  checks = final.valdaro.mkChecks svc.checks // checks;
+                };
+            in { valdaro = prev.valdaro // { inherit callService; }; };
+
      in globals // flake-utils.lib.eachDefaultSystem (system:
           let pkgs = import nixpkgs {
                 inherit system;
@@ -60,17 +92,11 @@
               };
 
               server = pkgs.haskellPackages.valdaro-server;
-
-              tooling = pkgs.callPackage shells/tooling.nix { pname = "valdaro"; version = "0.0.1.0"; };
-
            in {
                 packages.server  = server;
                 packages.default = server;
 
-                devShells = {
-                  inherit tooling;
-                  server = server.env;
-                };
+                devShells.server = server.env;
               }
         );
 }
