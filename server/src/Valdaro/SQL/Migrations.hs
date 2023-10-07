@@ -1,5 +1,6 @@
 module Valdaro.SQL.Migrations
   ( applyMigrations
+  , applyMigrationsAndFixtures
   , validateMigrations
   , script
   , module X
@@ -33,3 +34,8 @@ run successMessage failureMessage migrations =
     case result of
       MigrationSuccess -> putStrLn successMessage $> True
       MigrationError _ -> putStrLn failureMessage $> False
+
+applyMigrationsAndFixtures :: CanSQL r m => [ MigrationCommand ] -> Maybe FilePath -> m Bool
+applyMigrationsAndFixtures migrations' fixtures =
+  let extraCommands = maybe [] (pure . MigrationFile "fixtures") fixtures
+   in applyMigrations (migrations' <> extraCommands)

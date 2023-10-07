@@ -67,16 +67,22 @@ library
                      , wai
                      , sel
                      , http-api-data
+                     , warp
+                     , wai-extra
+                     , optparse-applicative
 
   exposed-modules:     Valdaro
                      , Valdaro.API.Login
                      , Valdaro.API.Session
+                     , Valdaro.CLI
+                     , Valdaro.CLI.Options
                      , Valdaro.Configuration
                      , Valdaro.Security
                      , Valdaro.Security.Biscuit
                      , Valdaro.Security.Configuration
                      , Valdaro.Security.Password
                      , Valdaro.Server.Utils
+                     , Valdaro.Service
                      , Valdaro.SQL
                      , Valdaro.SQL.Configuration
                      , Valdaro.SQL.Connectivity
