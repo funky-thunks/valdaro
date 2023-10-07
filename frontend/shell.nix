@@ -29,6 +29,7 @@ mkShell {
     valdaro.frontend.easy-ps.purs-backend-es
     valdaro.frontend.esbuild
     valdaro.frontend.copy-css-modules
+    valdaro.frontend.bundler
     zephyr
     nodejs-18_x
     dhall

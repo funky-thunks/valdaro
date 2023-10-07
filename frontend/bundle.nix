@@ -34,7 +34,6 @@ in stdenv.mkDerivation {
     src = valdaro.frontend.gitignoreSource src;
 
     unpackPhase = ''
-      cp -r $src/utils utils
       cp -r $src/src .
 
       install-spago-style
@@ -50,8 +49,9 @@ in stdenv.mkDerivation {
       zephyr -f Main.main
 
       copy-css-modules "dce-output" "$src/src"
+      cp ${./boot.js} dce-output/boot.js
 
-      esbuild --platform=browser --format=esm --loader:.css=local-css --bundle --minify --outfile="$distDirectory/bundle.js" ./utils/boot.js
+      esbuild --platform=browser --format=esm --loader:.css=local-css --bundle --minify --outfile="$distDirectory/bundle.js" dce-output/boot.js
     '';
 
     installPhase = ''

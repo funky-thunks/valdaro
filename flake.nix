@@ -27,7 +27,6 @@
             inherit (gitignore.lib) gitignoreSource;
             easy-ps = easy-purescript-nix.packages.${prev.system};
             inherit (nixpkgs-unstable.legacyPackages.${prev.system}) esbuild;
-            mkShell = final.callPackage shells/frontend.nix {};
           } // final.callPackages frontend/package.nix {};
         };
 

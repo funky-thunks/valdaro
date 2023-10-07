@@ -12,6 +12,8 @@
 
   bundle = callPackage ./bundle.nix {};
 
+  bundler = callPackage ./bundler.nix {};
+
   callPackage =
     src:
     { pname
@@ -29,4 +31,6 @@
         inherit pname version;
       };
     };
+
+  mkShell = callPackage ./shell.nix {};
 }
