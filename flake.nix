@@ -18,6 +18,7 @@
           overlays.valdaro = nixpkgs.lib.fixedPoints.composeManyExtensions [ node2nix-hs.overlays.default otherPackages frontendOverlay haskellOverlay lintersOverlay packagingOverlay ];
 
           nixosModules.postgresql = import nixos/postgresql.nix;
+          nixosModules.services   = import nixos/services.nix;
         };
 
         otherPackages = import pkgs/overlay.nix;
