@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 
-let cfg = config.backoffice.postgresql;
+let cfg = config.valdaro.postgresql;
     users = cfg.users;
 
     options = {
@@ -101,7 +101,7 @@ let cfg = config.backoffice.postgresql;
       '';
 in
 {
-  options.backoffice.postgresql = options;
+  options.valdaro.postgresql = options;
 
   config = lib.mkIf cfg.enable {
     services.postgresql = service;

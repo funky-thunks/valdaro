@@ -3,15 +3,16 @@ module Valdaro.CLI.Options
   , Command(..)
   ) where
 
+import           Data.Text           as T
 import           Options.Applicative
 
 data Command
   = Serve
   | Migrate (Maybe FilePath)
 
-readCommand :: IO Command
-readCommand =
-  execParser (info (commandsParser <**> helper) (fullDesc <> progDesc "backoffice backend service"))
+readCommand :: Text -> IO Command
+readCommand desc =
+  execParser (info (commandsParser <**> helper) (fullDesc <> progDesc (T.unpack desc <> " backend service")))
 
 commandsParser :: Parser Command
 commandsParser =

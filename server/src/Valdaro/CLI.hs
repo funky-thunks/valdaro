@@ -5,7 +5,7 @@ module Valdaro.CLI
   ) where
 
 import           Valdaro.CLI.Options (Command (..), readCommand)
-import           Valdaro.Service     (Service, runMigrations, runService)
+import           Valdaro.Service     (Service (..), runMigrations, runService)
 import           Valdaro.SQL         (HasSQLRuntime)
 
 interpretCommand :: HasSQLRuntime environment => Service environment -> Command -> IO ()
@@ -14,4 +14,4 @@ interpretCommand svc = \case
   Serve            -> runService    svc
 
 bootstrap :: HasSQLRuntime environment => Service environment -> IO ()
-bootstrap svc = interpretCommand svc =<< readCommand
+bootstrap svc = interpretCommand svc =<< readCommand (serviceName svc)
