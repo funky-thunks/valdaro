@@ -46,7 +46,7 @@ in stdenv.mkDerivation {
 
       build-from-store --codegen corefn,js "./src/**/*.purs"
 
-      zephyr -f Main.main
+      zephyr --codegen corefn,js --dce-foreign Main.main
 
       copy-css-modules "dce-output" "$src/src"
       cp ${./boot.js} dce-output/boot.js
