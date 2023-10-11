@@ -51,7 +51,7 @@ in stdenv.mkDerivation {
       copy-css-modules "dce-output" "$src/src"
       cp ${./boot.js} dce-output/boot.js
 
-      esbuild --platform=browser --format=esm --loader:.css=local-css --bundle --minify --outfile="$distDirectory/bundle.js" dce-output/boot.js
+      esbuild --platform=browser --format=esm --loader:.css=local-css --loader:.js=jsx --bundle --minify --outfile="$distDirectory/bundle.js" dce-output/boot.js
     '';
 
     installPhase = ''
