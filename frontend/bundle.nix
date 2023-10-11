@@ -20,7 +20,7 @@ in stdenv.mkDerivation {
 
     buildInputs = [
       spagoPkgs.installSpagoStyle
-      spagoPkgs.buildSpagoStyle
+      spagoPkgs.buildFromNixStore
       valdaro.frontend.easy-ps.purs
       valdaro.frontend.esbuild
       valdaro.frontend.copy-css-modules
@@ -44,7 +44,7 @@ in stdenv.mkDerivation {
       mkdir -p $distDirectory
       cp -r $src/assets/. "$distDirectory"
 
-      build-spago-style --codegen corefn,js "./src/**/*.purs"
+      build-from-store --codegen corefn,js "./src/**/*.purs"
 
       zephyr -f Main.main
 
