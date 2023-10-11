@@ -20,11 +20,12 @@
     , version
     , spagoPackages    ? "${src}/spago-packages.nix"
     , nodeDependencies ? "${src}/node-dependencies.nix"
+    , tree-shaking     ? true
     }:
 
     {
       package = valdaro.frontend.bundle {
-        inherit pname version spagoPackages nodeDependencies src;
+        inherit pname version spagoPackages nodeDependencies src tree-shaking;
       };
 
       shell = valdaro.frontend.mkShell {
