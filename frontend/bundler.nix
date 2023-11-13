@@ -28,13 +28,19 @@ writeShellApplication {
     if [ "''${1-}" == "dev-server" ]
     then
       mkdir -p output
-      cp ${./live-reload.js} output/live-reload.js
+      if [ ! -r output/live-reload.js ]
+      then
+        cp ${./live-reload.js} output/live-reload.js
+      fi
 
       bundle --watch --servedir="./assets" --outfile="assets/bundle.js" output/live-reload.js
 
     else
       mkdir -p dce-output
-      cp ${./boot.js} dce-output/boot.js
+      if [ ! -r dce-output/boot.js ]
+      then
+        cp ${./boot.js} dce-output/boot.js
+      fi
 
       cp -r assets/. "$distDirectory"
 
