@@ -22,7 +22,7 @@ writeShellApplication {
     distDirectory="dist"
 
     function bundle {
-      esbuild --platform=browser --format=esm --loader:.css=local-css --bundle "$@"
+      esbuild --platform=browser --format=esm --loader:.css=local-css --loader:.js=jsx --bundle "$@"
     }
 
     if [ "''${1-}" == "dev-server" ]
@@ -32,6 +32,8 @@ writeShellApplication {
       then
         cp ${./live-reload.js} output/live-reload.js
       fi
+
+      copy-css-modules "output"
 
       bundle --watch --servedir="./assets" --outfile="assets/bundle.js" output/live-reload.js
 
@@ -44,11 +46,11 @@ writeShellApplication {
 
       cp -r assets/. "$distDirectory"
 
+      copy-css-modules "dce-output"
+
       spago build --purs-args '--codegen corefn,js'
 
-      zephyr -f Main.main
-
-      copy-css-modules "dce-output"
+      zephyr --codegen corefn,js --dce-foreign Main.main
 
       bundle --minify --outfile="$distDirectory/bundle.js" dce-output/boot.js
     fi
