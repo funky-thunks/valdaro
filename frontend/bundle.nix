@@ -11,7 +11,7 @@
 , src
 , spagoPackages    ? "${src}/spago-packages.nix"
 , nodeDependencies ? "${src}/node-dependencies.nix"
-, tree-shaking     ? true
+, tree-shaking     ? false
 }:
 
 let spagoPkgs = callPackage spagoPackages {};

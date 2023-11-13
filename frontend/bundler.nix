@@ -38,21 +38,21 @@ writeShellApplication {
       bundle --watch --servedir="./assets" --outfile="assets/bundle.js" output/live-reload.js
 
     else
-      mkdir -p dce-output
-      if [ ! -r dce-output/boot.js ]
+      mkdir -p output
+      if [ ! -r output/boot.js ]
       then
-        cp ${./boot.js} dce-output/boot.js
+        cp ${./boot.js} output/boot.js
       fi
 
       cp -r assets/. "$distDirectory"
 
-      copy-css-modules "dce-output"
+      copy-css-modules "output"
 
       spago build --purs-args '--codegen corefn,js'
 
-      zephyr --codegen corefn,js --dce-foreign Main.main
+      # zephyr --codegen corefn,js --dce-foreign Main.main
 
-      bundle --minify --outfile="$distDirectory/bundle.js" dce-output/boot.js
+      bundle --minify --outfile="$distDirectory/bundle.js" output/boot.js
     fi
   '';
 }
