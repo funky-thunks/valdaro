@@ -19,11 +19,11 @@ function listModules {
 
 function copyCssModule {
   local module="$1"
-  cssModule="$(echo "$module" | sed -e 's-\.-/-' -e 's/$/.css/')"
+  cssModule="$(echo "$module" | sed -e 's-\.-/-' -e 's/$/.module.css/')"
   if [ -r "$src/$cssModule" ]
   then
     echo Copying css module for "$module"
-    cp "$src/$cssModule" "$outputDirectory/$module/$module.css"
+    cp "$src/$cssModule" "$outputDirectory/$module/$module.module.css"
   fi
 }
 

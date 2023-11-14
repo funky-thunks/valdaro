@@ -22,7 +22,7 @@ writeShellApplication {
     distDirectory="dist"
 
     function bundle {
-      esbuild --platform=browser --format=esm --loader:.css=local-css --loader:.js=jsx --bundle "$@"
+      esbuild --platform=browser --format=esm --loader:.js=jsx --bundle "$@"
     }
 
     if [ "''${1-}" == "dev-server" ]
