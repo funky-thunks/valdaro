@@ -54,10 +54,10 @@
         };
 
         packagingOverlay = final: prev:
-          let callService = { frontend, backend, pname, version, nix-lint-source, extra-checks ? {}, tree-shaking ? true }:
+          let callService = { frontend, backend, pname, version, nix-lint-source, extra-checks ? {}, tree-shaking ? false }:
                 serviceOutputs (prepareService { inherit frontend backend pname version nix-lint-source tree-shaking; }) extra-checks;
 
-              prepareService = { frontend, backend, pname, version, nix-lint-source, tree-shaking ? true }:
+              prepareService = { frontend, backend, pname, version, nix-lint-source, tree-shaking ? false }:
                 rec
                   {
                     frontendPackage = final.valdaro.frontend.callPackage frontend { inherit pname version tree-shaking; };

@@ -11,7 +11,7 @@
 , src
 , spagoPackages    ? "${src}/spago-packages.nix"
 , nodeDependencies ? "${src}/node-dependencies.nix"
-, tree-shaking     ? true
+, tree-shaking     ? false
 }:
 
 let spagoPkgs = callPackage spagoPackages {};
@@ -56,7 +56,7 @@ in stdenv.mkDerivation {
       copy-css-modules "${finalOutput}" "$src/src"
       cp ${./boot.js} ${finalOutput}/boot.js
 
-      esbuild --platform=browser --format=esm --loader:.css=local-css --loader:.js=jsx --bundle --minify --outfile="$distDirectory/bundle.js" ${finalOutput}/boot.js
+      esbuild --platform=browser --format=esm --loader:.js=jsx --bundle --minify --outfile="$distDirectory/bundle.js" ${finalOutput}/boot.js
     '';
 
     installPhase = ''
