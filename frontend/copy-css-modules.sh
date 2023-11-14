@@ -17,22 +17,29 @@ function listModules {
   find "$outputDirectory" -mindepth 1 -type d | sed -e "s/${outputDirectory}\///"
 }
 
-function copyCssModule {
-  local module="$1"
-  cssModule="$(echo "$module" | sed -e 's-\.-/-' -e 's/$/.module.css/')"
-  if [ -r "$src/$cssModule" ]
+function copyCssFile {
+  local description="$1"
+  local suffix="$2"
+  local module="$3"
+
+  cssFile="$(echo "$module" | sed -e 's-\.-/-' -e "s/$/${suffix}/")"
+  if [ -r "$src/$cssFile" ]
   then
-    echo Copying css module for "$module"
-    cp "$src/$cssModule" "$outputDirectory/$module/$module.module.css"
+    echo "Copying $description for $module"
+    cp "$src/$cssFile" "$outputDirectory/$module/$module$suffix"
   fi
 }
 
-function copyCssModules {
-  while read -r module; do copyCssModule "$module"; done
+function copyCssFiles {
+  while read -r module
+  do
+    copyCssFile "CSS module" ".module.css" "$module"
+    copyCssFile "Global CSS" ".css"        "$module"
+  done
 }
 
 function proceed {
-  listModules | copyCssModules
+  listModules | copyCssFiles
 }
 
 proceed
