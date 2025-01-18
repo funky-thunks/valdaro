@@ -4,8 +4,8 @@
 }:
 mkDerivation {
   pname = "biscuit-servant";
-  version = "0.3.0.0";
-  sha256 = "ed2b6c6011c8786d6bef262d8512df1a5795dde9a5397a81bb4534c7a64e7eb6";
+  version = "0.4.0.0";
+  sha256 = "e167ddc6417c25bc3c1cf906d0f61ad49590b4a93311645011a7460c4f6ba7a4";
   libraryHaskellDepends = [
     base biscuit-haskell bytestring mtl servant-server text wai
   ];

@@ -6,8 +6,8 @@
 }:
 mkDerivation {
   pname = "biscuit-haskell";
-  version = "0.3.0.0";
-  sha256 = "2bbd4751e96aa8553cb9ed0e614db925000c9f90683aa4a008b85345b3d1c51e";
+  version = "0.4.0.0";
+  sha256 = "7ed4813020de0f4a970b4af60da9dd22a0554985e8063225f02abf8d6b43de15";
   libraryHaskellDepends = [
     async base base16 base64 bytestring cereal containers cryptonite
     megaparsec memory mtl parser-combinators protobuf random regex-tdfa
