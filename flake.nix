@@ -99,7 +99,11 @@
                 packages.server  = server;
                 packages.default = server;
 
-                devShells.server = server.env;
+                devShells.server =
+                  pkgs.mkShell {
+                    inputsFrom = [ server.env ];
+                    packages = [ pkgs.ghcid ];
+                  };
               }
         );
 }
