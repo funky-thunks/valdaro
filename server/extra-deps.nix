@@ -1,3 +1,3 @@
-[ "pg-transact" "biscuit-haskell" "biscuit-servant" "text-display" "sel" "text-builder-linear"
+[ "pg-transact" "biscuit-haskell" "biscuit-servant" "text-display" "sel"
   { name = "libsodium-bindings"; nativeDeps = pkgs: { inherit (pkgs) libsodium; }; }
 ]
