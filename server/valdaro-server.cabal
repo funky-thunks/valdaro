@@ -70,7 +70,6 @@ library
                      , warp
                      , wai-extra
                      , optparse-applicative
-                     , unliftio-core
 
   exposed-modules:     Valdaro
                      , Valdaro.API.Login
