@@ -61,16 +61,8 @@ let cfg = config.valdaro.postgresql;
 
     buildUser = name: def: {
       inherit name;
-      ensurePermissions = ensurePermissions def;
-      ensureClauses     = ensureClauses     def;
+      ensureClauses = ensureClauses def;
     };
-
-    ensurePermissions = def: lib.lists.foldr buildPermission {} def.databases;
-
-    buildPermission = database: acc:
-      acc // {
-        "DATABASE ${database}" = "ALL PRIVILEGES";
-      };
 
     ensureClauses = def: {
       inherit (def) superuser;
@@ -78,8 +70,9 @@ let cfg = config.valdaro.postgresql;
       createdb   = def.superuser;
     };
 
-    setPasswords = ''
+    initialScript = ''
       $PSQL -tAf ${setPasswordsSQLFile}
+      $PSQL -tAf ${grantPermissionSQLFile}
     '';
 
     setPasswordsSQLFile =
@@ -99,12 +92,22 @@ let cfg = config.valdaro.postgresql;
           END IF;
         END $do$;
       '';
+
+    grantPermissionSQLFile =
+      pkgs.writeText "grant-permissions.sql"
+        (lib.strings.concatStrings (lib.attrsets.mapAttrsToList grantUserDatabases users));
+
+    grantUserDatabases = name: def:
+      lib.strings.concatMapStrings (grantUserDatabase name) def.databases;
+
+    grantUserDatabase = name: db:
+      "GRANT ALL PRIVILEGES ON DATABASE ${db} TO ${name};";
 in
 {
   options.valdaro.postgresql = options;
 
   config = lib.mkIf cfg.enable {
     services.postgresql = service;
-    systemd.services.postgresql.postStart = setPasswords;
+    systemd.services.postgresql.postStart = initialScript;
   };
 }

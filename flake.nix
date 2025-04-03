@@ -2,7 +2,7 @@
   description = "Valdaro - a modern haskell+purescript framework for SaaS projects";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/release-24.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs";
     nixpkgs-22_11.url = "github:nixos/nixpkgs/release-22.11";
     flake-utils.url = "github:numtide/flake-utils";
@@ -31,10 +31,13 @@
           } // final.callPackages frontend/package.nix {};
         };
 
+        compiler = "ghc966";
+
         haskellOverlay = globals.lib.valdaro.mkHaskellOverlay {
           extraDepsRoot = pkgs/haskell;
           deps = import server/extra-deps.nix;
           localPackages.valdaro-server = ./server;
+          inherit compiler;
         };
 
         lintersOverlay = _: prev: {
@@ -91,12 +94,16 @@
                 overlays = [ globals.overlays.valdaro ];
               };
 
-              server = pkgs.haskellPackages.valdaro-server;
+              server = pkgs.haskell.packages."${compiler}".valdaro-server;
            in {
                 packages.server  = server;
                 packages.default = server;
 
-                devShells.server = server.env;
+                devShells.server =
+                  pkgs.mkShell {
+                    inputsFrom = [ server.env ];
+                    packages = [ pkgs.ghcid ];
+                  };
               }
         );
 }

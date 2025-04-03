@@ -10,7 +10,7 @@ module Valdaro.SQL.Configuration
   , buildSQLRuntime
   ) where
 
-import           Data.Pool                  (Pool, createPool)
+import           Data.Pool                  (Pool, newPool, defaultPoolConfig)
 import           Database.PostgreSQL.Simple (Connection, close,
                                              connectPostgreSQL)
 import           Valdaro.Configuration
@@ -32,7 +32,7 @@ readConfiguration =
 newtype SQLRuntime =
   SQLRuntime
     { pool :: Pool Connection
-    } deriving stock (Show)
+    }
 
 buildSQLRuntime :: Configuration -> IO SQLRuntime
 buildSQLRuntime Configuration { .. } = do
@@ -41,7 +41,8 @@ buildSQLRuntime Configuration { .. } = do
         connectPostgreSQL $ case password of
           Nothing -> connectionUrl
           Just p  -> connectionUrl <> " password=" <> p
-  SQLRuntime <$> createPool connect close 1 2.0 maxPoolSize
+      poolConfig = defaultPoolConfig connect close 2.0 maxPoolSize
+  SQLRuntime <$> newPool poolConfig
 
 class HasSQLRuntime env where
   getSQLRuntime :: env -> SQLRuntime
